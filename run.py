@@ -1,4 +1,4 @@
-from pprint import pprint
+import time
 
 import gspread
 from google.oauth2.service_account import Credentials
@@ -25,13 +25,15 @@ def get_sales_data():
         print("Example: 15,25,27,30,24,11\n")
 
         data_str = input("Enter sales data here:")
+        print("")
 
         sales_data = data_str.split(",")
 
         if validate_data(sales_data):
-            print("Data is valid!")
+            print("Data is valid! \n")
+            time.sleep(0.5)
             break
-
+        time.sleep(1)
     return sales_data
 
 
@@ -114,6 +116,21 @@ def calculate_stock_data(data):
     return new_stock_data
 
 
+def get_stock_values(data):
+    """
+    Retrievies the headings from the worksheet and prints them out
+    with the corresponding calculated new_stock_data.
+    """
+    headings = SHEET.worksheet("stock").row_values(1)
+
+    stock_values = {}
+
+    for heading, data_num in zip(headings, data):
+        stock_values[heading] = data_num
+
+    return stock_values
+
+
 def main():
     """Run all program functions"""
     data = get_sales_data()
@@ -124,6 +141,9 @@ def main():
     sales_columns = get_last_5_entries_sales()
     stock_data = calculate_stock_data(sales_columns)
     update_worksheet(stock_data, "stock")
+    stock_values = get_stock_values(stock_data)
+    print("Make the following numers of each sandwich for next market:\n")
+    print(stock_values)
 
 
 print("Welcome to Love Sandwiches Data Automation")
